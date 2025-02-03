@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech and Text Converter</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Text to Speech & Speech to Text</h1>
+
+        <!-- Text-to-Speech -->
+        <div>
+            <h2>Text to Speech</h2>
+            <textarea id="text-input" placeholder="Enter text..."></textarea>
+            <button onclick="convertText()">Convert</button>
+            <audio id="audio-player" controls style="display:none;"></audio>
+        </div>
+
+        <!-- Speech-to-Text -->
+        <div>
+            <h2>Speech to Text</h2>
+            <button onclick="convertSpeech()">Speak</button>
+            <p id="speech-output"></p>
+        </div>
+    </div>
+
+    <script>
+        function convertText() {
+            let text = document.getElementById("text-input").value;
+            fetch('/convert-text', {
+                method: 'POST',
+                body: new URLSearchParams({ 'text': text }),
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("audio-player").src = data.audio;
+                document.getElementById("audio-player").style.display = "block";
+            });
+        }
+
+        function convertSpeech() {
+            fetch('/convert-speech', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("speech-output").innerText = data.text;
+            });
+        }
+    </script>
+</body>
+</html>
